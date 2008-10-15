@@ -1,0 +1,19 @@
+0.1.9 (15-04-2008)
+=====
+* Install .cmx file
+* More portable make invokation
+* Fixed typo in META file
+
+0.1.8 (17-10-2007)
+=====
+* Updated configure support
+* Use only caml syntax
+0.1.7.1
+=====
+* Initial release on behalf of the savnet team
+* Rewritten autoconf support to match the others binding
+* Added function to get the default driver
+0.1.7
+=====
+* Released by Bárður Árantsson <bardur@imada.sdu.dk> at
+   http://www.imada.sdu.dk/~bardur/personal/45-programs

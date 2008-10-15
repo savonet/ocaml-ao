@@ -1,0 +1,50 @@
+# Copyright (C) 2005-2006 Savonet team
+# libao bindings for OCaml.
+#
+# by Samuel Mimram and Romain Beauxis
+
+# $Id$
+
+OCAMLMAKEFILE = OCamlMakefile
+
+OCAMLFIND = @OCAMLFIND@
+OCAMLFIND_LDCONF = @OCAMLFIND_LDCONF@
+OCAMLC = @OCAMLC@
+OCAMLOPT = @OCAMLOPT@
+BEST = @BEST@
+OCAMLMKTOP = @OCAMLMKTOP@
+OCAMLCP = @OCAMLCP@
+OCAMLDEP = @OCAMLDEP@
+OCAMLLEX = @OCAMLLEX@
+OCAMLYACC = @OCAMLYACC@
+OCAMLDOC = @OCAMLDOC@
+LATEX = @LATEX@
+DVIPS = @DVIPS@
+PS2PDF = @PS2PDF@
+OCAMLLIBPATH = @CAMLLIBPATH@
+
+SOURCES = ao.mli ao.ml ao_stubs.c
+RESULT = ao
+OCAMLDOCFLAGS = -stars
+LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.a *.so)
+ACLIBS = @LIBS@ @libao_LIBS@
+LDFLAGS = @LDFLAGS@ @libao_LDFLAGS@
+CLIBS = $(ACLIBS:-l%=%)
+CC = @CC@
+CFLAGS = @CFLAGS@ @libao_CFLAGS@ -Wall -DCAML_NAME_SPACE
+CPPFLAGS = @CPPFLAGS@
+
+
+all: $(BEST)
+
+byte: byte-code-library
+
+opt: native-code-library
+
+install: libinstall
+
+uninstall: libuninstall
+
+update: uninstall install
+
+-include $(OCAMLMAKEFILE)

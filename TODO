@@ -1,0 +1,11 @@
+General:
+========
+
+(-) Comment the interface a little better? (Using ocamldoc??)
+
+ao_test.ml:
+===========
+
+(-) Needs to be cleaned up.
+
+(-) Change to perhaps play random noise? Or a sine wave???

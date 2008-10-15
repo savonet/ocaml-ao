@@ -1,0 +1,6 @@
+name="ao"
+version="@VERSION@"
+description="Portable Audio Output Library"
+requires=""
+archive(byte)="ao.cma"
+archive(native)="ao.cmxa"
