@@ -1,5 +1,6 @@
 0.1.10 ()
 ======
+* Added support for --enable-debugging configure option
 * Makefile now honnors LIBDIRS
   variable for linking against libraries
   located in other places than then standard
