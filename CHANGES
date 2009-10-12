@@ -1,4 +1,4 @@
-0.1.10 ()
+0.1.10 (2008-10-11)
 ======
 * Added support for --enable-debugging configure option
 * Makefile now honnors LIBDIRS
