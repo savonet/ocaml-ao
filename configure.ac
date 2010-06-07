@@ -122,6 +122,11 @@ AC_SUBST([libao_LIBS])
 libao_LDFLAGS=`$PKG_CONFIG --libs-only-L ao`
 AC_SUBST([libao_LDFLAGS])
 
+# Check if we are using ao version >= 1.0
+if ! pkg-config --atleast-version=1.0.0 ao; then
+  CFLAGS="$CFLAGS -DAO_PRE_1"
+fi
+
 if test "$OCAMLOPT" = no ; then
     BEST=byte
 else

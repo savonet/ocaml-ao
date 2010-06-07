@@ -1,3 +1,10 @@
+0.2.0 ()
+=====
+* Adapted to libao 1.0 API: added channels matrix parameter.
+* Wrapped all exported functions with the required 
+  CAMLprim/CAMLparam/CAMLlocal/CAMLreturn..
+* Simplified a lot of internal things..
+
 0.1.10 (2008-10-11)
 ======
 * Added support for --enable-debugging configure option

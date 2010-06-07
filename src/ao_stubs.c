@@ -1,6 +1,6 @@
-/* $Id: pymadfile.c,v 1.20 2003/02/05 06:29:23 jaq Exp $
- *
+/* 
  * Copyright (C) 2003  Bardur Arantsson
+ * Copyright (C) 2004-2010 The Savonet Team.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -18,8 +18,6 @@
  * USA
  */
 
-#include <stdio.h>
-#include <assert.h>
 #include <ao/ao.h>
 #include <string.h>
 #include <caml/memory.h>
@@ -47,7 +45,9 @@ decl_var(LIVE);
 decl_var(FILE);
 
 /* initialize the module */
-void _ao_stubs_initialize() {
+CAMLprim value ocaml_ao_stubs_initialize(value unit) 
+{
+  CAMLparam0();
   /* initialize polymorphic variants */
   import_var(UNKNOWN);
   import_var(LITTLE_ENDIAN);
@@ -57,12 +57,8 @@ void _ao_stubs_initialize() {
   import_var(FILE);
   /* initialize libao */
   ao_initialize();
+  CAMLreturn(Val_unit);
 }
-
-/* device type */
-struct ao_device_t {
-  ao_device *device;
-};
 
 /* convert raw int to byte_format_t */
 static value bf_of_int(int format)
@@ -82,31 +78,24 @@ static value bf_of_int(int format)
 
 static value list_prepend(value tail, value el)
 {
+  CAMLparam2(tail, el);
+  CAMLlocal1(head);
   /* List elements are just tuples containing an element
      and a 'next' pointer. */
-  value head = caml_alloc_tuple(2);
+  head = caml_alloc_tuple(2);
 
   Field(head,0) = el;
   Field(head,1) = tail;
 
-  return head;
+  CAMLreturn(head);
 }
 
-void _ao_stubs_shutdown() {
+CAMLprim value ocaml_ao_stubs_shutdown(value unit) 
+{
+  CAMLparam0();
   /* shut down libao */
   ao_shutdown();
-}
-
-static void dealloc_device(value v)
-{
-  struct ao_device_t *dev =
-    (struct ao_device_t *) Field(v,1);
-
-  if (dev->device) {
-    /* perform cleanup */
-    ao_close(dev->device);
-    dev->device = NULL;
-  }
+  CAMLreturn(Val_unit);
 }
 
 static value handle_open_error()
@@ -136,11 +125,17 @@ static void set_format(ao_sample_format *format,
                        value bits,
                        value rate,
                        value channels,
+                       value channels_matrix,
                        value byte_format)
 {
   format->bits = Int_val(bits);
   format->rate = Int_val(rate);
   format->channels = Int_val(channels);
+#ifndef AO_PRE_1
+  format->matrix = NULL;
+  if (caml_string_length(channels_matrix) > 0)
+    format->matrix = String_val(channels_matrix);
+#endif
 
   if (byte_format == get_var(LITTLE_ENDIAN)) { 
     format->byte_format = AO_FMT_LITTLE;
@@ -172,25 +167,20 @@ static void set_options(ao_option **_options, value opts)
   };
 }
 
-value _ao_stubs_open_live_aux_native(value bits, value rate, value channels,
-                                     value byte_format, value opts, value driver)
+CAMLprim value ocaml_ao_stubs_open_live_aux_native(value bits, value rate, value channels, value channels_matrix,
+                                              value byte_format, value opts, value driver)
 {
-  struct ao_device_t *dev;
+  CAMLparam2(opts,channels_matrix);
+  ao_device *dev;
   ao_option *options = NULL;
   ao_sample_format format;
 
-  /* allocate device */
-  if ((dev = malloc(sizeof(struct ao_device_t)))==NULL) {
-    caml_raise_out_of_memory();
-  };
-  /* no device to start with */
-  dev->device = NULL;
   /* set format */
-  set_format(&format, bits, rate, channels, byte_format);
+  set_format(&format, bits, rate, channels, channels_matrix, byte_format);
   /* set options */
   set_options(&options, opts);
   /* open device */
-  if (!(dev->device = ao_open_live(Int_val(driver),&format, options)))
+  if (!(dev = ao_open_live(Int_val(driver),&format, options)))
     {
       /* free options */
       ao_free_options(options);
@@ -199,41 +189,33 @@ value _ao_stubs_open_live_aux_native(value bits, value rate, value channels,
     };
   /* free options */
   ao_free_options(options);
-  /* return */
-  {
-    value v_retval = caml_alloc_final(2, dealloc_device, 100, 50000);
-    Field(v_retval,1) = (value) dev;
-    return v_retval;
-  }
+  CAMLreturn((value)dev);
 }
 
-value _ao_stubs_open_live_aux_bytecode(value *args, int n)
+CAMLprim value ocaml_ao_stubs_open_live_aux_bytecode(value *args, int n)
 {
-  return _ao_stubs_open_live_aux_native(args[0],args[1],args[2],
-                                        args[3],args[4],args[5]);
+  return ocaml_ao_stubs_open_live_aux_native(args[0],args[1],args[2],
+                                             args[3],args[4],args[5],
+                                             args[6]);
 }
 
-value _ao_stubs_open_file_aux_native(value bits, value rate, 
-                                     value channels, value byte_format,
+CAMLprim value ocaml_ao_stubs_open_file_aux_native(value bits, value rate, 
+                                     value channels, value channels_matrix, value byte_format,
                                      value opts,  value driver,
                                      value overwrite, value filename)
 {
-  struct ao_device_t *dev;
+  CAMLparam2(opts,channels_matrix);
+  CAMLlocal1(v_retval);
+  ao_device *dev;
   ao_option *options = NULL;
   ao_sample_format format;
 
-  /* allocate device */
-  if ((dev = malloc(sizeof(struct ao_device_t)))==NULL) {
-    caml_raise_out_of_memory();
-  };
-  /* no device to start with */
-  dev->device = NULL;
   /* set format */
-  set_format(&format, bits, rate, channels, byte_format);
+  set_format(&format, bits, rate, channels, channels_matrix, byte_format);
   /* set options */
   set_options(&options, opts);
   /* open file */
-  if (!(dev->device = ao_open_file(Int_val(driver),String_val(filename),
+  if (!(dev = ao_open_file(Int_val(driver),String_val(filename),
                                    Bool_val(overwrite),&format, options)))
     {
       /* free options */
@@ -243,53 +225,51 @@ value _ao_stubs_open_file_aux_native(value bits, value rate,
     };
   /* free options */
   ao_free_options(options);
-  /* return */
-  {
-    value v_retval = caml_alloc_final(2, dealloc_device, 100, 50000);
-    Field(v_retval,1) = (value) dev;
-    return v_retval;
-  }
+  CAMLreturn((value)dev);
 }
 
-value _ao_stubs_open_file_aux_bytecode(value *args, int n)
+CAMLprim value ocaml_ao_stubs_open_file_aux_bytecode(value *args, int n)
 {
-  return _ao_stubs_open_file_aux_native(args[0],args[1],args[2],args[3],
-                                        args[4],args[5],args[6],args[7]);
+  return ocaml_ao_stubs_open_file_aux_native(args[0],args[1],args[2],args[3],
+                                             args[4],args[5],args[6],args[7],
+                                             args[8]);
 }
 
-void _ao_stubs_close(value v_dev) {
-  dealloc_device(v_dev);
+CAMLprim value ocaml_ao_stubs_close(value v_dev) 
+{
+  CAMLparam1(v_dev);
+  ao_close((ao_device*)v_dev);
+  CAMLreturn(Val_unit);
 }
 
-void _ao_stubs_play(value v_dev, value v_buf) {
-
-  struct ao_device_t *dev =
-    (struct ao_device_t *) Field(v_dev,1);
+CAMLprim value ocaml_ao_stubs_play(value v_dev, value v_buf) 
+{
+  CAMLparam2(v_dev,v_buf);
   int n = caml_string_length(v_buf);
   char* buf = malloc(n);
-
-  assert(dev != NULL && buf != NULL);
-
-  if (dev->device==NULL) {
-    caml_failwith("Cannot play on a closed device");
-  };
+  if (buf == NULL)
+    caml_raise_out_of_memory();
 
   memcpy(buf,String_val(v_buf),n);
   caml_enter_blocking_section();
-  ao_play(dev->device, buf, n);
+  ao_play((ao_device*)v_dev, buf, n);
   caml_leave_blocking_section();
   free(buf);
+  CAMLreturn(Val_unit);
 }
 
-value _ao_stubs_get_default_driver()
+CAMLprim value ocaml_ao_stubs_get_default_driver(value unit)
 {
-  return Val_int(ao_default_driver_id());
+  CAMLparam0();
+  CAMLreturn(Val_int(ao_default_driver_id()));
 }
 
-value _ao_stubs_get_drivers()
+CAMLprim value ocaml_ao_stubs_get_drivers(value unit)
 {
+  CAMLparam0();
+  CAMLlocal1(list);
   int n;
-  value list = Val_unit;
+  list = Val_unit;
   /* get number of drivers */
   ao_driver_info_list(&n);
   /* build list of drivers backwards */
@@ -297,11 +277,12 @@ value _ao_stubs_get_drivers()
     list = list_prepend(list, Val_int(n));
   };
   /* return the completed list */
-  return list;
+  CAMLreturn(list);
 }
 
-value _ao_stubs_find_driver(value v_short_name)
+CAMLprim value ocaml_ao_stubs_find_driver(value v_short_name)
 {
+  CAMLparam0();
   int driver =
     ao_driver_id(String_val(v_short_name));
 
@@ -309,80 +290,97 @@ value _ao_stubs_find_driver(value v_short_name)
     my_failwith("Could not find driver for name \"%s\"", String_val(v_short_name));
   };
 
-  return Val_int(driver);
+  CAMLreturn(Val_int(driver));
 }
 
-value _ao_stubs_driver_kind(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_kind(value v_drv)
 {
+  CAMLparam0();
   ao_info *info =
     ao_driver_info(Int_val(v_drv));
 
-  assert(info != NULL);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
 
   switch (info->type)
     {
     case AO_TYPE_LIVE:
-      return get_var(LIVE);
+      CAMLreturn(get_var(LIVE));
     case AO_TYPE_FILE:
-      return get_var(FILE);
+      CAMLreturn(get_var(FILE));
     default:
       /* should not happen, but you never know. */
-      return get_var(UNKNOWN);
+      CAMLreturn(get_var(UNKNOWN));
     };
 }
 
-value _ao_stubs_driver_name(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_name(value v_drv)
 {
+  CAMLparam0();
   ao_info *info = ao_driver_info(Int_val(v_drv));
-  assert(info != NULL);
-  return caml_copy_string(info->name);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
+  CAMLreturn(caml_copy_string(info->name));
 }
 
-value _ao_stubs_driver_short_name(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_short_name(value v_drv)
 {
+  CAMLparam0();
   ao_info *info = ao_driver_info(Int_val(v_drv));
-  assert(info != NULL);
-  return caml_copy_string(info->short_name);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
+  CAMLreturn(caml_copy_string(info->short_name));
 }
 
-value _ao_stubs_driver_comment(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_comment(value v_drv)
 {
+  CAMLparam0();
   ao_info *info = ao_driver_info(Int_val(v_drv));
-  assert(info != NULL);
-  return caml_copy_string(info->comment);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
+  CAMLreturn(caml_copy_string(info->comment));
 }
 
-value _ao_stubs_driver_author(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_author(value v_drv)
 {
+  CAMLparam0();
   ao_info *info = ao_driver_info(Int_val(v_drv));
-  assert(info != NULL);
-  return caml_copy_string(info->author);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
+  CAMLreturn(caml_copy_string(info->author));
 }
 
-value _ao_stubs_driver_priority(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_priority(value v_drv)
 {
+  CAMLparam0();
   ao_info *info = ao_driver_info(Int_val(v_drv));
-  assert(info != NULL);
-  return Val_int(info->priority);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
+  CAMLreturn(Val_int(info->priority));
 }
 
-value _ao_stubs_driver_preferred_byte_format(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_preferred_byte_format(value v_drv)
 {
+  CAMLparam0();
   ao_info *info = ao_driver_info(Int_val(v_drv));
-  assert(info != NULL);
-  return bf_of_int(info->preferred_byte_format);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
+  CAMLreturn(bf_of_int(info->preferred_byte_format));
 }
 
-value _ao_stubs_driver_options(value v_drv)
+CAMLprim value ocaml_ao_stubs_driver_options(value v_drv)
 {
+  CAMLparam0();
+  CAMLlocal1(list);
   int i;
   ao_info *info;
   const char *opt;
-  value list = Val_unit;
+  list = Val_unit;
 
   info = ao_driver_info(Int_val(v_drv));
 
-  assert(info != NULL);
+  if (info == NULL)
+    caml_raise_constant(*caml_named_value("ocaml_ao_exn_invalid"));
 
   for (i = info->option_count-1; i>=0; i--) {
     if ((opt = info->options[i])) {
@@ -390,5 +388,5 @@ value _ao_stubs_driver_options(value v_drv)
     }
   }
 
-  return list;
+  CAMLreturn(list);
 }

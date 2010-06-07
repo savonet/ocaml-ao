@@ -1,5 +1,6 @@
 (*
   Copyright (C) 2003  Bardur Arantsson
+  Copyright (C) 2004-2010 The Savonet Team
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -27,6 +28,13 @@ type byte_format_t = [ `LITTLE_ENDIAN | `BIG_ENDIAN | `NATIVE | `UNKNOWN ]
 
 (** Driver type (private). *)
 type driver_t
+
+(** Raised when trying to play or close 
+  * a closed device. *)
+exception Closed
+
+(** Raised when passing an invalid parameter's value. *)
+exception Invalid_value
 
 (** Get default driver *)
 val get_default_driver : unit -> driver_t
@@ -60,18 +68,26 @@ val driver_preferred_byte_format : driver_t -> byte_format_t
   for the given driver. *)
 val driver_options : driver_t -> string list
 
-(** [open_live TODO]. *)
+(** [open_live].
+  * The [channels_matrix] parameter is 
+  * used only if the module is compiled against
+  * libao >= 1.0. *)
 val open_live : ?bits:int ->
    ?rate:int ->
    ?channels:int ->
+   ?channels_matrix:string ->
    ?byte_format:byte_format_t ->
    ?options:((string*string) list) ->
    ?driver:driver_t -> unit -> t
 
-(** [open_file TODO]. *)
+(** [open_file]. 
+  * The [channels_matrix] parameter is  
+  * used only if the module is compiled against 
+  * libao >= 1.0. *)
 val open_file : ?bits:int ->
    ?rate:int ->
    ?channels:int ->
+   ?channels_matrix:string ->
    ?byte_format:byte_format_t ->
    ?options:((string*string) list) ->
    ?driver:driver_t ->
