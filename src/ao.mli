@@ -27,7 +27,17 @@ type driver_kind_t = [ `LIVE | `FILE | `UNKNOWN ]
 type byte_format_t = [ `LITTLE_ENDIAN | `BIG_ENDIAN | `NATIVE | `UNKNOWN ]
 
 (** Driver type (private). *)
-type driver_t
+type driver_t = private
+  { id         : int ;
+    kind       : driver_kind_t ;
+    short_name : string ;
+    name       : string ;
+    comment    : string ;
+    author     : string ;
+    priority   : int ;
+    preferred_byte_format : byte_format_t ;
+    options    : string list
+  }
 
 (** Raised when trying to play or close 
   * a closed device. *)
@@ -41,32 +51,6 @@ val get_default_driver : unit -> driver_t
 
 (** [drivers] is a list of available drivers. *)
 val drivers : driver_t list
-
-(** [driver_kind driver] gets the driver type of the given driver. *)
-val driver_kind : driver_t -> driver_kind_t
-
-(** [driver_name driver] gets the name of the given driver. *)
-val driver_name : driver_t -> string
-
-(** [driver_short_name driver] gets the short name of the given driver. *)
-val driver_short_name : driver_t -> string
-
-(** [driver_comment driver] gets the comment associated with the given driver. *)
-val driver_comment : driver_t -> string
-
-(** [driver_author driver] gets the author associated with the given driver. *)
-val driver_author : driver_t -> string
-
-(** [driver_priority driver] gets the priority associated with the given driver. *)
-val driver_priority : driver_t -> int
-
-(** [driver_preferred_byte_format driver] retrieves the preferred byte format of
-  * the given driver. *)
-val driver_preferred_byte_format : driver_t -> byte_format_t
-
-(** [driver_options driver] retrieves the list of supported options
-  for the given driver. *)
-val driver_options : driver_t -> string list
 
 (** [open_live].
   * The [channels_matrix] parameter is 

@@ -23,11 +23,23 @@ type t =
   { device         : device ;
     mutable closed : bool } 
 
-type driver_t
-
 type driver_kind_t = [`LIVE | `FILE | `UNKNOWN]
 
 type byte_format_t = [`LITTLE_ENDIAN | `BIG_ENDIAN | `NATIVE | `UNKNOWN]
+
+type driver_t = 
+  { id         : int ;
+    kind       : driver_kind_t ;
+    short_name : string ;
+    name       : string ;
+    comment    : string ;
+    author     : string ;
+    priority   : int ;
+    preferred_byte_format : byte_format_t ;
+    options    : string list
+  }
+
+type internal_driver_t = int
 
 exception Closed
 exception Invalid_value
@@ -43,29 +55,50 @@ let () =
   _initialize ();
   at_exit _shutdown
 
-external get_default_driver : unit -> driver_t = "ocaml_ao_stubs_get_default_driver"
+external driver_kind :  internal_driver_t -> driver_kind_t = "ocaml_ao_stubs_driver_kind"
 
-external get_drivers : unit -> driver_t list = "ocaml_ao_stubs_get_drivers"
+external driver_name :  internal_driver_t -> string = "ocaml_ao_stubs_driver_name"
 
-external find_driver : string -> driver_t = "ocaml_ao_stubs_find_driver"
+external driver_short_name :  internal_driver_t -> string = "ocaml_ao_stubs_driver_short_name"
+
+external driver_comment :  internal_driver_t -> string = "ocaml_ao_stubs_driver_comment"
+
+external driver_author :  internal_driver_t -> string = "ocaml_ao_stubs_driver_author"
+
+external driver_priority :  internal_driver_t -> int = "ocaml_ao_stubs_driver_priority"
+
+external driver_preferred_byte_format :  internal_driver_t -> byte_format_t = "ocaml_ao_stubs_driver_preferred_byte_format"
+
+external driver_options :  internal_driver_t -> string list = "ocaml_ao_stubs_driver_options"
+
+let driver_of_internal_driver x = 
+  { id = x;
+    kind = driver_kind x;
+    short_name = driver_short_name x;
+    name = driver_name x;
+    comment = driver_comment x;
+    author = driver_author x;
+    priority = driver_priority x;
+    preferred_byte_format = driver_preferred_byte_format x;
+    options = driver_options x
+  } 
+
+external get_default_driver : unit ->  internal_driver_t = "ocaml_ao_stubs_get_default_driver"
+
+let get_default_driver () = 
+  driver_of_internal_driver (get_default_driver ())
+
+external get_drivers : unit ->  internal_driver_t list = "ocaml_ao_stubs_get_drivers"
+
+let get_drivers () = 
+  List.map driver_of_internal_driver (get_drivers ())
+
+external find_driver : string ->  internal_driver_t = "ocaml_ao_stubs_find_driver"
+
+let find_driver x =  
+  driver_of_internal_driver (find_driver x)
 
 let drivers = get_drivers ()
-
-external driver_kind : driver_t -> driver_kind_t = "ocaml_ao_stubs_driver_kind"
-
-external driver_name : driver_t -> string = "ocaml_ao_stubs_driver_name"
-
-external driver_short_name : driver_t -> string = "ocaml_ao_stubs_driver_short_name"
-
-external driver_comment : driver_t -> string = "ocaml_ao_stubs_driver_comment"
-
-external driver_author : driver_t -> string = "ocaml_ao_stubs_driver_author"
-
-external driver_priority : driver_t -> int = "ocaml_ao_stubs_driver_priority"
-
-external driver_preferred_byte_format : driver_t -> byte_format_t = "ocaml_ao_stubs_driver_preferred_byte_format"
-
-external driver_options : driver_t -> string list = "ocaml_ao_stubs_driver_options"
 
 external close : device -> unit =
   "ocaml_ao_stubs_close"
@@ -80,7 +113,7 @@ let close x =
   close x.device ;
   x.closed <- true
 
-external open_live_aux : int -> int -> int -> string -> byte_format_t -> (string*string) list -> driver_t -> device =
+external open_live_aux : int -> int -> int -> string -> byte_format_t -> (string*string) list -> internal_driver_t -> device =
   "ocaml_ao_stubs_open_live_aux_bytecode" "ocaml_ao_stubs_open_live_aux_native"
 
 let open_live
@@ -98,13 +131,13 @@ let open_live
   in
   let dev = open_live_aux bits rate channels 
                           channels_matrix byte_format 
-                          options driver 
+                          options driver.id
   in
   let ret = { device = dev ; closed = false } in
   Gc.finalise gc_close ret ;
   ret
 
-external open_file_aux : int -> int -> int -> string -> byte_format_t -> (string*string) list -> driver_t -> bool -> string -> device =
+external open_file_aux : int -> int -> int -> string -> byte_format_t -> (string*string) list -> internal_driver_t -> bool -> string -> device =
   "ocaml_ao_stubs_open_file_aux_bytecode" "ocaml_ao_stubs_open_file_aux_native"
 
 let open_file
@@ -123,7 +156,7 @@ let open_file
        | Some x -> x
    in
    let dev = open_file_aux bits rate channels channels_matrix 
-                                byte_format options driver 
+                                byte_format options driver.id 
                                 overwrite filename 
    in
    let ret = { device = dev; closed = false } in

@@ -23,27 +23,28 @@ let () =
    (* List all the drivers. *)
    List.iter
      (fun driver ->
-        printf "\nname: %s\n" (Ao.driver_name driver);
-        printf "short_name: %s\n" (Ao.driver_short_name driver);
-        printf "comment: %s\n" (Ao.driver_comment driver);
-        printf "author: %s\n" (Ao.driver_author driver);
-        printf "priority: %d\n" (Ao.driver_priority driver);
+        printf "\nid: %i\n" driver.Ao.id;
+        printf "name: %s\n" driver.Ao.name;
+        printf "short_name: %s\n" driver.Ao.short_name;
+        printf "comment: %s\n" driver.Ao.comment;
+        printf "author: %s\n" driver.Ao.author;
+        printf "priority: %d\n" driver.Ao.priority;
 
         printf "pref. format: %s\n" (
-          match (Ao.driver_preferred_byte_format driver) with
+          match driver.Ao.preferred_byte_format with
               | `NATIVE -> "native"
               | `BIG_ENDIAN -> "big endian"
               | `LITTLE_ENDIAN -> "little endian"
               | `UNKNOWN -> "(unknown)");
 
         printf "kind: %s\n" (
-          match (Ao.driver_kind driver) with
+          match driver.Ao.kind with
               | `LIVE -> "Live"
               | `FILE -> "File"
               | `UNKNOWN -> "(unknown)");
 
         printf "options: [%s]\n"
-          (String.concat "," (Ao.driver_options driver));
+          (String.concat "," driver.Ao.options);
      )
       Ao.drivers;
 
