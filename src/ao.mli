@@ -17,6 +17,8 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
+(** OCaml interface to the ao library. *)
+
 (** Device type. *)
 type t
 
@@ -87,3 +89,15 @@ val play : t -> string -> unit
 
 (** [close device] closes the given device. *)
 val close : t -> unit
+
+(** Backward compatibility functions, do not use them in new code. *)
+
+val driver_kind : driver_t -> driver_kind_t
+val driver_name : driver_t -> string
+val driver_short_name : driver_t -> string
+val driver_comment : driver_t -> string
+val driver_author : driver_t -> string
+val driver_priority : driver_t -> int
+val driver_preferred_byte_format : driver_t -> byte_format_t
+val driver_options : driver_t -> string list
+

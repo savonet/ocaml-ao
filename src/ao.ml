@@ -171,3 +171,11 @@ let play x s =
     raise Closed ;
   play x.device s
 
+let driver_kind d = d.kind
+let driver_name d = d.name
+let driver_short_name d = d.short_name
+let driver_comment d = d.comment
+let driver_author d = d.author
+let driver_priority d = d.priority
+let driver_preferred_byte_format d = d.preferred_byte_format
+let driver_options d = d.options

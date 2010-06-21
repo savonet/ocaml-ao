@@ -4,6 +4,8 @@
 * Wrapped all exported functions with the required 
   CAMLprim/CAMLparam/CAMLlocal/CAMLreturn..
 * Simplified a lot of internal things..
+* Changed driver's type to a record containing
+  the driver's properties.
 
 0.1.10 (2008-10-11)
 ======
