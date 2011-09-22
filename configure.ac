@@ -19,21 +19,10 @@ AC_PROG_CC()
 AC_CHECK_TOOL([AR],[ar],no)
 AC_SUBST(AR)
 PKG_PROG_PKG_CONFIG()
-#PKG_CHECK_MODULES(libao, ao, , [AC_MSG_ERROR(libao not found.)])
-
-# PKG_CHECK_MODULES loses when you need --libs-only-[lL]
-if ! $PKG_CONFIG --exists ao; then
-        AC_MSG_ERROR([libao not found])
-fi
-libao_CFLAGS=`$PKG_CONFIG --cflags ao`
-AC_SUBST([libao_CFLAGS])
-libao_LIBS=`$PKG_CONFIG --libs-only-l ao`
-AC_SUBST([libao_LIBS])
-libao_LDFLAGS=`$PKG_CONFIG --libs-only-L ao`
-AC_SUBST([libao_LDFLAGS])
+PKG_CONFIG_CHECK_MODULE([ao])
 
 # Check if we are using ao version >= 1.0
-if ! pkg-config --atleast-version=1.0.0 ao; then
+if ! $PKG_CONFIG --atleast-version=1.0.0 ao; then
   CFLAGS="$CFLAGS -DAO_PRE_1"
 fi
 
