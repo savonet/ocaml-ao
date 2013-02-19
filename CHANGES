@@ -1,7 +1,7 @@
-0.2.0 ()
+0.2.0 (2010-06-21)
 =====
 * Adapted to libao 1.0 API: added channels matrix parameter.
-* Wrapped all exported functions with the required 
+* Wrapped all exported functions with the required
   CAMLprim/CAMLparam/CAMLlocal/CAMLreturn..
 * Simplified a lot of internal things..
 * Changed driver's type to a record containing
