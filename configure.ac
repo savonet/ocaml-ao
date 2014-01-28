@@ -15,6 +15,10 @@ if ! $PKG_CONFIG --atleast-version=1.0.0 ao; then
   CFLAGS="$CFLAGS -DAO_PRE_1"
 fi
 
+case "$host" in
+   *-mingw*) LIBS="$LIBS dl";
+esac
+
 # substitutions to perform
 AC_SUBST(VERSION)
 
