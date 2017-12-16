@@ -1,6 +1,6 @@
 
 # check for one particular file of the sources 
-AC_INIT([ocaml-ao],[0.2.1],[savonet-users@lists.sourceforge.net])
+AC_INIT([ocaml-ao],[0.2.2],[savonet-users@lists.sourceforge.net])
 
 VERSION=$PACKAGE_VERSION
 AC_MSG_RESULT([configuring $PACKAGE_STRING])
@@ -16,7 +16,8 @@ if ! $PKG_CONFIG --atleast-version=1.0.0 ao; then
 fi
 
 case "$host" in
-   *-mingw*) LIBS="$LIBS dl";
+   *-mingw*.static) true;;
+   *-mingw*) LIBS="$LIBS dl";;
 esac
 
 # substitutions to perform

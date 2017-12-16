@@ -1,3 +1,7 @@
+0.2.2 ()
+=====
+* Fix LIBD dl requirement when compiling with mingw.
+
 0.2.1 (2015-07-29)
 =====
 * Dummy github release.
