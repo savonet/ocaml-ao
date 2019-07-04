@@ -1,4 +1,5 @@
 opam-version: "2.0"
+name: "ao"
 version: "0.2.2"
 maintainer: "smimram@gmail.com"
 authors: "The Savonet Team <savonet-users@lists.sourceforge.net>"
