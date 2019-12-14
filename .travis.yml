@@ -4,9 +4,10 @@ addons:
     packages:
     - ocaml-nox
     - ocaml-findlib
+    - libao-dev
 
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libao-dev
-
-script: ./bootstrap && ./configure && make && make -C examples
+script:
+  - ./bootstrap
+  - ./configure
+  - make
+  - make -C examples
