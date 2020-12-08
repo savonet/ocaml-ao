@@ -131,11 +131,6 @@ static void set_format(ao_sample_format *format,
   format->bits = Int_val(bits);
   format->rate = Int_val(rate);
   format->channels = Int_val(channels);
-#ifndef AO_PRE_1
-  format->matrix = NULL;
-  if (caml_string_length(channels_matrix) > 0)
-    format->matrix = String_val(channels_matrix);
-#endif
 
   if (byte_format == get_var(LITTLE_ENDIAN)) { 
     format->byte_format = AO_FMT_LITTLE;

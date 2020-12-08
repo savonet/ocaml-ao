@@ -1,0 +1,3 @@
+(test
+ (name ao_test)
+ (libraries ao))

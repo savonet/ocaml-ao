@@ -1,7 +1,7 @@
 ocaml-ao
 ========
 
-This package contains an O'Caml interface for the cross-platform
+This package contains an OCaml interface for the cross-platform
 audio output library, otherwise known as libao.
 
 Please read the COPYING file before using this software.
@@ -9,16 +9,17 @@ Please read the COPYING file before using this software.
 Prerequisites:
 ==============
 
-- ocaml >= 3.0.6 (haven't tried earlier versions)
-
-- libao >= 0.8.3 (haven't tried earlier versions)
-
-- findlib >= 0.8.1 (haven't tried earlier versions)
+- ocaml
+- libao
+- findlib
+- dune >= 2.0
 
 Compilation:
 ============
 
-	$ make all
+```
+$ dune build
+```
 
 This should build both the native and the byte-code version of the
 extension library.
@@ -26,10 +27,16 @@ extension library.
 Installation:
 =============
 
-	$ make install
+Via `opam`:
 
-This should install the library file (using ocamlfind) in the
-appropriate place.
+```
+$ opam install ao
+```
+
+Via `dune` (for developers):
+```
+$ dune install
+```
 
 Author:
 =======

@@ -1,6 +1,6 @@
-0.2.2 ()
+0.2.2 (unreleased)
 =====
-* Fix LIBD dl requirement when compiling with mingw.
+* Switch to dune!
 
 0.2.1 (2015-07-29)
 =====

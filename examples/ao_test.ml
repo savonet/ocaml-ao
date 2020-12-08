@@ -52,9 +52,9 @@ let () =
      Ao.open_live ~options:[("x","y");("x1","y1")]
        ~driver:(Ao.find_driver "null") ()
    in
-   let buf = String.create 41029 in
+   let buf = Bytes.create 41029 in
      (* Play garbage (literally!). *)
-     Ao.play device buf;
+     Ao.play device (Bytes.to_string buf);
      (* Close device. *)
      Ao.close device;
      (* And we're done. *)
