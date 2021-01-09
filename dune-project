@@ -1,5 +1,5 @@
 (lang dune 2.0)
-(version 0.2.2)
+(version 0.2.3)
 (name ao)
 (source (github savonet/ocaml-ao))
 (license LGPL-2.1)

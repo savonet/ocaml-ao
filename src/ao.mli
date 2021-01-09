@@ -29,17 +29,17 @@ type driver_kind_t = [ `LIVE | `FILE | `UNKNOWN ]
 type byte_format_t = [ `LITTLE_ENDIAN | `BIG_ENDIAN | `NATIVE | `UNKNOWN ]
 
 (** Driver type (private). *)
-type driver_t = private
-  { id         : int ;
-    kind       : driver_kind_t ;
-    short_name : string ;
-    name       : string ;
-    comment    : string ;
-    author     : string ;
-    priority   : int ;
-    preferred_byte_format : byte_format_t ;
-    options    : string list
-  }
+type driver_t = private {
+  id : int;
+  kind : driver_kind_t;
+  short_name : string;
+  name : string;
+  comment : string;
+  author : string;
+  priority : int;
+  preferred_byte_format : byte_format_t;
+  options : string list;
+}
 
 (** Raised when trying to play or close 
   * a closed device. *)
@@ -58,27 +58,32 @@ val drivers : driver_t list
   * The [channels_matrix] parameter is 
   * used only if the module is compiled against
   * libao >= 1.0. *)
-val open_live : ?bits:int ->
-   ?rate:int ->
-   ?channels:int ->
-   ?channels_matrix:string ->
-   ?byte_format:byte_format_t ->
-   ?options:((string*string) list) ->
-   ?driver:driver_t -> unit -> t
+val open_live :
+  ?bits:int ->
+  ?rate:int ->
+  ?channels:int ->
+  ?channels_matrix:string ->
+  ?byte_format:byte_format_t ->
+  ?options:(string * string) list ->
+  ?driver:driver_t ->
+  unit ->
+  t
 
 (** [open_file]. 
   * The [channels_matrix] parameter is  
   * used only if the module is compiled against 
   * libao >= 1.0. *)
-val open_file : ?bits:int ->
-   ?rate:int ->
-   ?channels:int ->
-   ?channels_matrix:string ->
-   ?byte_format:byte_format_t ->
-   ?options:((string*string) list) ->
-   ?driver:driver_t ->
-   ?overwrite:bool ->
-   string -> t
+val open_file :
+  ?bits:int ->
+  ?rate:int ->
+  ?channels:int ->
+  ?channels_matrix:string ->
+  ?byte_format:byte_format_t ->
+  ?options:(string * string) list ->
+  ?driver:driver_t ->
+  ?overwrite:bool ->
+  string ->
+  t
 
 (** [find_driver name] returns the driver associated with the given {b short}
   * name. *)
@@ -100,4 +105,3 @@ val driver_author : driver_t -> string
 val driver_priority : driver_t -> int
 val driver_preferred_byte_format : driver_t -> byte_format_t
 val driver_options : driver_t -> string list
-

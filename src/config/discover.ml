@@ -9,10 +9,7 @@ let () =
         match C.Pkg_config.get c with
           | None -> default
           | Some pc -> (
-              match
-                C.Pkg_config.query_expr_err pc ~package:"ao"
-                  ~expr:"ao"
-              with
+              match C.Pkg_config.query_expr_err pc ~package:"ao" ~expr:"ao" with
                 | Error msg -> failwith msg
                 | Ok deps -> deps )
       in
