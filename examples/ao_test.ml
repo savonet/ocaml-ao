@@ -31,17 +31,17 @@ let () =
       printf "priority: %d\n" driver.Ao.priority;
 
       printf "pref. format: %s\n"
-        ( match driver.Ao.preferred_byte_format with
+        (match driver.Ao.preferred_byte_format with
           | `NATIVE -> "native"
           | `BIG_ENDIAN -> "big endian"
           | `LITTLE_ENDIAN -> "little endian"
-          | `UNKNOWN -> "(unknown)" );
+          | `UNKNOWN -> "(unknown)");
 
       printf "kind: %s\n"
-        ( match driver.Ao.kind with
+        (match driver.Ao.kind with
           | `LIVE -> "Live"
           | `FILE -> "File"
-          | `UNKNOWN -> "(unknown)" );
+          | `UNKNOWN -> "(unknown)");
 
       printf "options: [%s]\n" (String.concat "," driver.Ao.options))
     Ao.drivers;

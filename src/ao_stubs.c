@@ -168,6 +168,8 @@ CAMLprim value ocaml_ao_stubs_open_live_aux_native(value bits, value rate,
                                                    value byte_format,
                                                    value opts, value driver) {
   CAMLparam2(opts, channels_matrix);
+  CAMLlocal1(ret);
+
   ao_device *dev;
   ao_option *options = NULL;
   ao_sample_format format;
@@ -185,7 +187,11 @@ CAMLprim value ocaml_ao_stubs_open_live_aux_native(value bits, value rate,
   };
   /* free options */
   ao_free_options(options);
-  CAMLreturn((value)dev);
+
+  ret = caml_alloc(1, Abstract_tag);
+  *((ao_device **)Data_abstract_val(ret)) = dev;
+
+  CAMLreturn(ret);
 }
 
 CAMLprim value ocaml_ao_stubs_open_live_aux_bytecode(value *args, int n) {
@@ -198,7 +204,7 @@ CAMLprim value ocaml_ao_stubs_open_file_aux_native(
     value byte_format, value opts, value driver, value overwrite,
     value filename) {
   CAMLparam2(opts, channels_matrix);
-  CAMLlocal1(v_retval);
+  CAMLlocal1(ret);
   ao_device *dev;
   ao_option *options = NULL;
   ao_sample_format format;
@@ -217,7 +223,11 @@ CAMLprim value ocaml_ao_stubs_open_file_aux_native(
   };
   /* free options */
   ao_free_options(options);
-  CAMLreturn((value)dev);
+
+  ret = caml_alloc(1, Abstract_tag);
+  *((ao_device **)Data_abstract_val(ret)) = dev;
+
+  CAMLreturn(ret);
 }
 
 CAMLprim value ocaml_ao_stubs_open_file_aux_bytecode(value *args, int n) {
@@ -228,12 +238,14 @@ CAMLprim value ocaml_ao_stubs_open_file_aux_bytecode(value *args, int n) {
 
 CAMLprim value ocaml_ao_stubs_close(value v_dev) {
   CAMLparam1(v_dev);
-  ao_close((ao_device *)v_dev);
+  ao_device *dev = *((ao_device **)Data_abstract_val(v_dev));
+  ao_close(dev);
   CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_ao_stubs_play(value v_dev, value v_buf) {
   CAMLparam2(v_dev, v_buf);
+  ao_device *dev = *((ao_device **)Data_abstract_val(v_dev));
   int n = caml_string_length(v_buf);
   char *buf = malloc(n);
   if (buf == NULL)
@@ -241,7 +253,7 @@ CAMLprim value ocaml_ao_stubs_play(value v_dev, value v_buf) {
 
   memcpy(buf, String_val(v_buf), n);
   caml_enter_blocking_section();
-  ao_play((ao_device *)v_dev, buf, n);
+  ao_play(dev, buf, n);
   caml_leave_blocking_section();
   free(buf);
   CAMLreturn(Val_unit);
