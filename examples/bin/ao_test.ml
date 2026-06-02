@@ -47,7 +47,8 @@ let () =
     Ao.drivers;
 
   let device =
-    Ao.open_live ~options:[("x", "y"); ("x1", "y1")]
+    Ao.open_live
+      ~options:[("x", "y"); ("x1", "y1")]
       ~driver:(Ao.find_driver "null") ()
   in
   let buf = Bytes.create 41029 in

@@ -41,8 +41,7 @@ type driver_t = private {
   options : string list;
 }
 
-(** Raised when trying to play or close 
-  * a closed device. *)
+(** Raised when trying to play or close * a closed device. *)
 exception Closed
 
 (** Raised when passing an invalid parameter's value. *)
@@ -54,10 +53,8 @@ val get_default_driver : unit -> driver_t
 (** [drivers] is a list of available drivers. *)
 val drivers : driver_t list
 
-(** [open_live].
-  * The [channels_matrix] parameter is 
-  * used only if the module is compiled against
-  * libao >= 1.0. *)
+(** [open_live]. * The [channels_matrix] parameter is * used only if the module
+    is compiled against * libao >= 1.0. *)
 val open_live :
   ?bits:int ->
   ?rate:int ->
@@ -69,10 +66,8 @@ val open_live :
   unit ->
   t
 
-(** [open_file]. 
-  * The [channels_matrix] parameter is  
-  * used only if the module is compiled against 
-  * libao >= 1.0. *)
+(** [open_file]. * The [channels_matrix] parameter is * used only if the module
+    is compiled against * libao >= 1.0. *)
 val open_file :
   ?bits:int ->
   ?rate:int ->
@@ -85,8 +80,8 @@ val open_file :
   string ->
   t
 
-(** [find_driver name] returns the driver associated with the given {b short}
-  * name. *)
+(** [find_driver name] returns the driver associated with the given {b short} *
+    name. *)
 val find_driver : string -> driver_t
 
 (** [play device buf] plays the sequence of samples in [buf]. *)

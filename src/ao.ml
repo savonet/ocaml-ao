@@ -119,7 +119,8 @@ external open_live_aux :
   (string * string) list ->
   internal_driver_t ->
   device
-  = "ocaml_ao_stubs_open_live_aux_bytecode" "ocaml_ao_stubs_open_live_aux_native"
+  = "ocaml_ao_stubs_open_live_aux_bytecode"
+    "ocaml_ao_stubs_open_live_aux_native"
 
 let open_live ?(bits = 16) ?(rate = 44100) ?(channels = 2) ?channels_matrix
     ?(byte_format = `LITTLE_ENDIAN) ?(options = []) ?driver () =
@@ -145,7 +146,8 @@ external open_file_aux :
   bool ->
   string ->
   device
-  = "ocaml_ao_stubs_open_file_aux_bytecode" "ocaml_ao_stubs_open_file_aux_native"
+  = "ocaml_ao_stubs_open_file_aux_bytecode"
+    "ocaml_ao_stubs_open_file_aux_native"
 
 let open_file ?(bits = 16) ?(rate = 44100) ?(channels = 2) ?channels_matrix
     ?(byte_format = `LITTLE_ENDIAN) ?(options = []) ?driver ?(overwrite = false)
